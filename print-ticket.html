@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Talón • Óptica Cristal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  @page { size: A4 portrait; margin: 12mm; }
+  body { background:#fff; font: 400 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; color:#111; }
+  .coupon {
+    width: 100%;
+    max-width: 120mm; /* compacto para talón */
+    border:1px solid #bbb; border-radius:4mm;
+    padding:6mm; margin:0 auto;
+    break-inside: avoid;
+  }
+  .ch { position:relative; display:grid; grid-template-columns: 1fr auto; align-items:end; gap: 6mm; padding-bottom: 12mm; }
+  .brand { font-weight:900; font-size: 15pt; }
+  .brand small { display:block; font-weight:600; color:#444; font-size:10pt; }
+  #barcode { height:16mm; width:auto; display:block; justify-self:end; }
+  #num {
+    position:absolute; left:50%; transform:translateX(-50%);
+    bottom: -2mm; font-weight:900; font-size:12pt;
+  }
+  .row { display:grid; grid-template-columns: 24mm 1fr; gap:3mm; padding:2mm 0; border-top:1px dashed #ddd; }
+  .row:first-of-type { border-top:0; }
+  .lab { font-weight:700; }
+  .val { font-weight:700; }
+  /* Nombre sin “Paciente”: ocultamos label y mostramos solo el valor */
+  .row.nombre .lab { display:none; }
+  .qr-wrap { display:flex; gap:6mm; align-items:center; justify-content:flex-start; margin-top:4mm; }
+  .qr-wrap canvas, .qr-wrap img { width:28mm; height:28mm; }
+  .muted { color:#666; font-size:10pt; margin-top:2mm; }
+  @media print {
+    .actions { display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="coupon">
+  <div class="ch">
+    <div>
+      <div class="brand">Óptica Cristal<small>San Miguel • Argentina</small></div>
+    </div>
+    <img id="barcode" alt="Código de barras" />
+    <div id="num"></div>
+  </div>
+
+  <div class="row nombre">
+    <div class="lab">Cliente</div>
+    <div class="val" id="v-nombre"></div>
+  </div>
+  <div class="row">
+    <div class="lab">Fecha</div>
+    <div class="val" id="v-fecha"></div>
+  </div>
+  <div class="row">
+    <div class="lab">Retira</div>
+    <div class="val" id="v-retira"></div>
+  </div>
+
+  <div class="qr-wrap">
+    <div id="qrcode"></div>
+    <div class="muted">
+      Escaneá para verificar tu pedido<br/>
+      N° <span id="v-num"></span>
+    </div>
+  </div>
+</div>
+
+<div class="actions" style="margin:16px auto; text-align:center;">
+  <button onclick="window.print()">Imprimir</button>
+</div>
+
+<!-- Librerías livianas para barcode y QR -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script>
+  // Lee params: n (n° trabajo), nombre, fecha (dd/mm/aa), retira (yyyy-mm-dd), qr (opcional contenido)
+  const params = new URLSearchParams(location.search);
+  const N      = params.get('n') || '';
+  const nombre = (params.get('nombre') || '').toUpperCase().trim();
+  const fecha  = params.get('fecha') || '';
+  const retira = params.get('retira') || '';
+  const qrData = params.get('qr') || N; // por defecto el QR contiene el N°
+
+  // Pinta textos
+  document.getElementById('num').textContent     = N ? `N° ${N}` : '';
+  document.getElementById('v-num').textContent   = N || '';
+  document.getElementById('v-nombre').textContent= nombre || '';
+  document.getElementById('v-fecha').textContent = fecha || '';
+  document.getElementById('v-retira').textContent= retira || '';
+
+  // Código de barras (Code128)
+  try {
+    JsBarcode('#barcode', N || '0', {
+      format: 'CODE128',
+      displayValue: false,
+      height: 60,
+      margin: 0
+    });
+  } catch (e) {}
+
+  // QR (Qrious)
+  try {
+    const qr = new QRious({
+      element: document.createElement('canvas'),
+      value: qrData,
+      size: 180
+    });
+    document.getElementById('qrcode').appendChild(qr.element);
+  } catch (e) {}
+</script>
+</body>
+</html>

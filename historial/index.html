@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1340, initial-scale=1" />
+  <title>Óptica Cristal • Historial de trabajos</title>
+  <link rel="icon" type="image/png" href="../logo_muy_chico_sinfondo.png" />
+  <link rel="stylesheet" href="./estilos-historial.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="../logo_muy_chico_sinfondo.png" alt="Logo" class="logo" />
+      <h1>Historial de trabajos</h1>
+    </div>
+    <div class="help">
+      <details>
+        <summary>¿Cómo buscar?</summary>
+        <div class="tips">
+          • N° exacto: <code>@123</code> ó <code>"123"</code><br/>
+          • Texto libre (AND): <code>graciela 113</code><br/>
+          • DNI o teléfono: escribir números directos
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card search">
+      <div class="row">
+        <input id="q" class="input" type="search"
+               placeholder='Buscar por Nº (@123), DNI, nombre/apellido o teléfono…' autofocus />
+        <button id="btnBuscar" class="btn">Buscar</button>
+        <button id="btnLimpiar" class="btn-secondary">Limpiar</button>
+      </div>
+
+      <div class="row opts">
+        <label class="chk">
+          <input id="pdfOnly" type="checkbox" checked />
+          <span>Solo con PDF</span>
+        </label>
+        <div class="spacer"></div>
+        <span id="status" class="meta"></span>
+      </div>
+    </section>
+
+    <section class="card results">
+      <div id="spinner" class="spinner" hidden></div>
+
+      <div class="table-wrap">
+        <table class="table" id="tabla">
+          <thead>
+          <tr>
+            <th style="width:110px">N°</th>
+            <th style="width:120px">Fecha</th>
+            <th>Cliente</th>
+            <th style="width:120px">DNI</th>
+            <th style="width:140px">Teléfono</th>
+            <th style="width:160px">PDF</th>
+            <th style="width:210px">Acciones</th>
+          </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty" class="empty" hidden>Sin resultados</div>
+      </div>
+
+      <div class="pager" id="pager" hidden>
+        <button id="prev" class="btn-secondary">&laquo; Anterior</button>
+        <span id="pageInfo" class="meta"></span>
+        <button id="next" class="btn-secondary">Siguiente &raquo;</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>© Óptica Cristal</small>
+  </footer>
+
+  <!-- Opcional: alertas lindas -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Tu constante API_URL la importamos de tu proyecto -->
+  <script type="module" src="./historial.js"></script>
+</body>
+</html>

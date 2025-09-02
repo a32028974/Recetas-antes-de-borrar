@@ -1,0 +1,44 @@
+:root{
+  --bg: #f7f8fb;
+  --text: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --brand: #2563eb;
+  --brand-2: #1d4ed8;
+  --ok: #059669;
+}
+*{ box-sizing: border-box }
+html,body{ margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, Arial, sans-serif }
+.container{ max-width: 1200px; margin: 10px auto; padding: 0 10px; display: grid; gap: 12px }
+.topbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--line); background:#fff; position:sticky; top:0; z-index:5 }
+.brand{ display:flex; align-items:center; gap:10px }
+.brand .logo{ height:26px }
+.brand h1{ font-size:18px; margin:0 }
+.help summary{ cursor:pointer; color:var(--muted) }
+.tips{ padding-top:6px; color:var(--muted); font-size:13px }
+.card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px }
+.row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+.spacer{ flex:1 }
+.input{ height:38px; min-width: 420px; padding:8px 10px; border:1px solid var(--line); border-radius:8px }
+.btn, .btn-secondary{
+  height:38px; padding:0 14px; border-radius:8px; border:1px solid transparent; cursor:pointer;
+}
+.btn{ background:var(--brand); color:#fff; }
+.btn:hover{ background:var(--brand-2) }
+.btn-secondary{ background:#fff; color:var(--text); border-color: var(--line) }
+.btn-secondary:hover{ background:#f3f4f6 }
+
+.chk{ display:inline-flex; gap:6px; align-items:center; color:var(--text) }
+.meta{ color:var(--muted) }
+
+.table-wrap{ overflow:auto; }
+.table{ width:100%; border-collapse: collapse; }
+th, td{ border-bottom:1px solid var(--line); padding:8px 10px; white-space:nowrap; text-align:left }
+.empty{ padding:12px; color:var(--muted) }
+
+.spinner{ width:32px; height:32px; border:3px solid #e5e7eb; border-top-color:var(--brand); border-radius:50%; animation:spin 1s linear infinite; margin:10px auto }
+@keyframes spin{ to{ transform: rotate(360deg) } }
+
+.pager{ display:flex; gap:10px; justify-content:center; align-items:center; padding-top:8px }
+
+.footer{ text-align:center; padding:10px; color:var(--muted) }

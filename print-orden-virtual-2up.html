@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orden virtual • Óptica Cristal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="logo.png" />
+  <link rel="stylesheet" href="css/print.css?v=2025-09-02" />
+  <!-- JsBarcode para generar código de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <style>
+    /* Estilos mínimos de vista previa en pantalla */
+    body{ background:#f6f7fb; margin:16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial; }
+    @media print { body{ background:#fff; margin:0; } }
+  </style>
+</head>
+<body>
+
+  <div id="print-root">
+    <div id="print-stack">
+      <!-- Panel único 18×10 (arriba) -->
+      <section id="print-panel">
+        <div id="panel-top">
+          <img id="print-logo" src="logo.png" alt="Óptica Cristal" />
+          <div style="text-align:center; flex:1;">
+            <div style="font-weight:800; font-size:14pt;">PEDIDO</div>
+            <div id="p-n" style="font-weight:800;">N° —</div>
+          </div>
+          <svg id="print-barcode"></svg>
+        </div>
+
+        <div class="print-row">
+          <div class="print-label">NOMBRE</div>
+          <div class="print-value" id="p-nombre">—</div>
+        </div>
+
+        <div class="print-row">
+          <div class="print-label">DF</div>
+          <div class="print-value" id="p-df">—</div>
+        </div>
+
+        <div id="panel-receta">
+          <div class="rec-box">
+            <h4>ARMAZÓN</h4>
+            <div class="rec-grid">
+              <div></div><div id="p-armazon">—</div>
+            </div>
+          </div>
+
+          <div class="rec-box">
+            <h4>CRISTAL</h4>
+            <div class="rec-grid">
+              <div></div><div id="p-cristal">—</div>
+            </div>
+          </div>
+
+          <div class="rec-box">
+            <h4>GRADUACIÓN</h4>
+            <div class="rec-grid">
+              <div>OD</div><div><span id="od-esf">0.00</span> <span id="od-cil">0.00</span> x <span id="od-eje">0</span></div>
+              <div>OI</div><div><span id="oi-esf">0.00</span> <span id="oi-cil">0.00</span> x <span id="oi-eje">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-row" style="margin-top:6mm;">
+          <div class="print-label">FECHA</div>
+          <div class="print-value" id="p-fecha">—</div>
+        </div>
+      </section>
+
+      <!-- Línea de corte oculta por CSS (no usamos talón) -->
+      <hr class="print-cutline" />
+      <!-- Talón está deshabilitado por CSS; no se renderiza -->
+      <section id="print-coupon" hidden></section>
+    </div>
+  </div>
+
+  <script>
+    // Utilidades de querystring
+    function q(key, def=''){ const u=new URL(location.href); const v=u.searchParams.get(key); return v ?? def; }
+    function show(id, v){ const el=document.getElementById(id); if(el) el.textContent = v && String(v).trim() ? v : '—'; }
+
+    // Traer parámetros enviados por main.js
+    const data = {
+      n: q('n',''),
+      nombre: q('nombre','').toUpperCase(),
+      armazon: q('armazon',''),
+      cristal: q('cristal',''),
+      fecha: q('fecha',''),
+      df: q('df',''),
+      od_esf: q('od_esf',''),
+      od_cil: q('od_cil',''),
+      od_eje: q('od_eje',''),
+      oi_esf: q('oi_esf',''),
+      oi_cil: q('oi_cil',''),
+      oi_eje: q('oi_eje','')
+    };
+
+    // Completar textos
+    show('p-n', data.n ? 'N° ' + data.n : 'N° —');
+    show('p-nombre', data.nombre);
+    show('p-armazon', data.armazon);
+    show('p-cristal', data.cristal);
+    show('p-fecha', data.fecha);
+    show('p-df', data.df);
+
+    // Graduación
+    document.getElementById('od-esf').textContent = data.od_esf || '0.00';
+    document.getElementById('od-cil').textContent = data.od_cil || '0.00';
+    document.getElementById('od-eje').textContent = data.od_eje || '0';
+    document.getElementById('oi-esf').textContent = data.oi_esf || '0.00';
+    document.getElementById('oi-cil').textContent = data.oi_cil || '0.00';
+    document.getElementById('oi-eje').textContent = data.oi_eje || '0';
+
+    // Código de barras (EAN128/Code128 con el número de trabajo)
+    try{
+      const n = data.n || '0000000000';
+      JsBarcode("#print-barcode", n, {
+        format: "CODE128",
+        displayValue: false,
+        height: 60,  // ~16mm aprox (CSS también controla altura)
+        margin: 0
+      });
+    }catch(err){ console.warn('Barcode error', err); }
+
+    // Imprimir automáticamente apenas carga
+    window.addEventListener('load', () => {
+      setTimeout(() => window.print(), 120);
+    });
+  </script>
+</body>
+</html>

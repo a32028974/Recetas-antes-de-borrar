@@ -1,0 +1,185 @@
+/* ===========================
+   PRINT — Óptica Cristal (v2025-09-02.2)
+   - Panel único, SIEMPRE arriba del A4
+   - Panel 18×10 con padding compacto (sin achicar tipografías)
+   - Talón deshabilitado por defecto (se puede habilitar manualmente)
+   =========================== */
+
+/* --------- En pantalla: ocultar contenedores de impresión ---------- */
+@media screen {
+  #print-root,
+  #print-ticket,
+  #print-area,
+  #print-page,
+  #talon,
+  .print-root,
+  .print-only,
+  .ticket-print,
+  .ticket,
+  .print-preview{
+    display:none !important;
+    visibility:hidden !important;
+    height:0 !important;
+    overflow:hidden !important;
+  }
+}
+
+/* =======================  MODO IMPRESIÓN  ========================= */
+@media print {
+  :root{
+    --w-18: 180mm;   /* ancho objetivo */
+    --h-10: 100mm;   /* alto objetivo */
+    --h-05: 50mm;
+
+    /* Espaciados compactos */
+    --pad-panel: 5mm 7mm;
+    --pad-coupon: 4mm 7mm;
+    --gap-stack: 8mm;
+    --mb-section: 3mm;
+    --gap-row: 3mm;
+  }
+
+  /* SIEMPRE ARRIBA: una sola orden */
+  @page {
+    size: A4 portrait;
+    margin-top: 5mm;
+    margin-left: 10mm;
+    margin-right: 10mm;
+    margin-bottom: 10mm;
+  }
+
+  html, body { background:#fff !important; padding:0 !important; margin:0 !important; }
+  .wrap { max-width:none !important; padding:0 !important; }
+  .card { box-shadow:none !important; border:1px solid #ddd !important; }
+
+  /* Ocultar todo lo que no sea la zona de impresión embebida */
+  .no-print, #cam-modal, header, form, .actions,
+  .spinner, .progress-panel { display:none !important; }
+
+  /* Contenedor raíz de impresión (embebido o en la página de print) */
+  #print-root { display:block !important; break-inside: avoid; margin-top: 0; }
+
+  /* Pila: SOLO PANEL (sin segundo talón por defecto) */
+  #print-stack{ display:block; width: var(--w-18); margin: 0 auto; break-inside: avoid; }
+
+  /* ================= PANEL PRINCIPAL (18×10) ================= */
+  #print-panel{
+    width: var(--w-18);
+    min-height: var(--h-10);
+    max-height: var(--h-10); /* evita desborde vertical */
+    border:1px solid #bbb;
+    border-radius: 4mm;
+    padding: var(--pad-panel);
+    box-sizing: border-box;
+    overflow: hidden;
+    break-inside: avoid;
+    margin: 0 auto;
+  }
+
+  /* Encabezado compacto: logo + titulo + barcode */
+  #panel-top{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 6mm; margin-bottom: var(--mb-section);
+  }
+  #print-logo{ width:28mm; height:auto; object-fit:contain; }
+  #print-barcode{ height:16mm; width:auto; object-fit:contain; }
+
+  /* Filas de datos (Nombre, DF, etc.) */
+  .print-row{
+    display:grid;
+    grid-template-columns: 28mm 1fr;
+    gap: var(--gap-row);
+    margin: 1.2mm 0;
+  }
+  .print-label{ font-weight:700; }
+  .print-value{ }
+
+  /* Bloques de receta (graduación / cristal / armazón / etc.) */
+  #panel-receta{
+    margin-top: var(--mb-section);
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4mm;
+  }
+  .rec-box{
+    border:1px solid #ddd;
+    border-radius:3mm;
+    padding: 3mm;
+  }
+  .rec-box h4{ margin:0 0 2mm 0; font-size:12pt; }
+  .rec-grid{
+    display:grid;
+    grid-template-columns: 12mm 1fr;
+    gap: 1.2mm 3mm;
+    font-size:11pt;
+  }
+
+  /* Foto (si existe) */
+  #panel-foto{
+    width:100%;
+    max-height: 48mm;
+    object-fit: cover;
+    border-radius: 2mm;
+    margin-top: 3mm;
+  }
+
+  /* Totales */
+  #panel-totales{
+    margin-top: 4mm;
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 6mm;
+  }
+  .total-fig{
+    font-size: 16pt;
+    font-weight: 900;
+    border: 2px solid #000;
+    padding: 2mm 4mm;
+    border-radius: 2mm;
+  }
+
+  /* Línea de corte oculta (no hay talón por defecto) */
+  .print-cutline{ display:none !important; }
+
+  /* ====================== TALÓN (opcional) ====================== */
+  #print-coupon{
+    width: var(--w-18);
+    min-height: var(--h-05);
+    border:1px solid #bbb;
+    border-radius:4mm;
+    padding: var(--pad-coupon);
+    box-sizing:border-box;
+    break-inside:avoid;
+    overflow:hidden;
+    font-size: 11pt;
+    display:none; /* Oculto por defecto */
+  }
+
+  #coupon-head{
+    position:relative;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    align-items:end;
+    gap: 4mm;
+    margin-bottom: 2mm;
+    padding-bottom: 10mm; /* espacio para el N° debajo del barcode */
+  }
+  #coupon-barcode{ height:14mm; width:auto; display:block; justify-self:end; }
+  #cpn-numero{
+    position:absolute; left:50%; transform:translateX(-50%);
+    bottom:-8mm; font-weight:800; font-size:12pt; letter-spacing:.3pt;
+  }
+  .coupon-row{
+    display:grid; grid-template-columns: 24mm 1fr;
+    gap: 2.5mm; padding: 1mm 0; border-top: 1px dashed #e2e2e2;
+  }
+  .coupon-row:first-of-type{ border-top:0; }
+  .coupon-label{ font-weight:700; }
+
+  /* Ocultar campos no deseados si alguna vez se usa el talón */
+  .coupon-row:has(#cpn-dni),
+  .coupon-row:has(#cpn-tel),
+  .coupon-row:has(#cpn-cristal),
+  .coupon-row:has(#cpn-armazon),
+  .coupon-row:has(#cpn-distancia){ display:none !important; }
+  .coupon-row:has(#cpn-cliente) .coupon-label{ display:none !important; }
+}
